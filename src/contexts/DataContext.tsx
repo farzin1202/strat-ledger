@@ -5,10 +5,12 @@ interface DataContextType {
   strategies: Strategy[];
   loading: boolean;
   addStrategy: (name: string) => Promise<unknown>;
-  updateStrategy: (id: string, name: string) => Promise<void>;
+  updateStrategy: (id: string, name: string, notes?: string) => Promise<void>;
+  updateStrategyNotes: (id: string, notes: string) => Promise<void>;
   deleteStrategy: (id: string) => Promise<void>;
   addMonth: (strategyId: string, name: string, year: number) => Promise<unknown>;
   updateMonth: (strategyId: string, monthId: string, name: string) => Promise<void>;
+  updateMonthNotes: (monthId: string, notes: string) => Promise<void>;
   deleteMonth: (strategyId: string, monthId: string) => Promise<void>;
   addTrade: (strategyId: string, monthId: string, trade: Omit<Trade, 'id'>) => Promise<unknown>;
   updateTrade: (strategyId: string, monthId: string, tradeId: string, trade: Partial<Trade>) => Promise<void>;

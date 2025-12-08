@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select';
 import { Header } from '@/components/Header';
 import { MonthCard } from '@/components/MonthCard';
+import { NotesSection } from '@/components/NotesSection';
 import { useData } from '@/contexts/DataContext';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -33,7 +34,7 @@ const StrategyDetail = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(months[new Date().getMonth()]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
-  const { strategies, loading, addMonth } = useData();
+  const { strategies, loading, addMonth, updateStrategyNotes } = useData();
   const { t } = useTranslation();
 
   const strategy = strategies.find((s) => s.id === strategyId);
@@ -57,6 +58,10 @@ const StrategyDetail = () => {
   const handleCreate = async () => {
     await addMonth(strategyId!, selectedMonth, parseInt(selectedYear));
     setIsCreateOpen(false);
+  };
+
+  const handleSaveNotes = async (notes: string) => {
+    await updateStrategyNotes(strategyId!, notes);
   };
 
   const currentYear = new Date().getFullYear();
@@ -92,6 +97,20 @@ const StrategyDetail = () => {
               {t('addMonth')}
             </Button>
           </div>
+        </motion.div>
+
+        {/* Notes Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8"
+        >
+          <NotesSection
+            notes={strategy.notes || ''}
+            onSave={handleSaveNotes}
+            title={t('strategyNotes')}
+          />
         </motion.div>
 
         {strategy.months.length === 0 ? (

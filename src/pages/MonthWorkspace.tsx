@@ -6,13 +6,14 @@ import { Header } from '@/components/Header';
 import { TradeGrid } from '@/components/TradeGrid';
 import { EquityCurve } from '@/components/EquityCurve';
 import { AnalyticsCards } from '@/components/AnalyticsCards';
+import { NotesSection } from '@/components/NotesSection';
 import { useData } from '@/contexts/DataContext';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const MonthWorkspace = () => {
   const { strategyId, monthId } = useParams();
   const navigate = useNavigate();
-  const { strategies, loading } = useData();
+  const { strategies, loading, updateMonthNotes } = useData();
   const { t } = useTranslation();
 
   const strategy = strategies.find((s) => s.id === strategyId);
@@ -33,6 +34,10 @@ const MonthWorkspace = () => {
     navigate('/');
     return null;
   }
+
+  const handleSaveNotes = async (notes: string) => {
+    await updateMonthNotes(monthId!, notes);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,6 +84,18 @@ const MonthWorkspace = () => {
               <EquityCurve trades={month.trades} />
             </motion.div>
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <NotesSection
+              notes={month.notes || ''}
+              onSave={handleSaveNotes}
+              title={t('monthNotes')}
+            />
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
