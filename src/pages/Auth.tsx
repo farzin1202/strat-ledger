@@ -1,16 +1,29 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
+import { supabase } from '@/integrations/supabase/client';
+import { z } from 'zod';
+
+const emailSchema = z.string().email().max(255);
+const passwordSchema = z.string().min(6).max(100);
 
 const Auth = () => {
   const { user, loading, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -18,12 +31,90 @@ const Auth = () => {
     }
   }, [user, loading, navigate]);
 
+  const validateInputs = () => {
+    try {
+      emailSchema.parse(email);
+    } catch {
+      toast.error(t('invalidEmail'));
+      return false;
+    }
+    
+    try {
+      passwordSchema.parse(password);
+    } catch {
+      toast.error(t('passwordTooShort'));
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleGoogleLogin = async () => {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error('Login error:', error);
       toast.error(t('loginError'));
+    }
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateInputs()) return;
+    
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error(t('invalidCredentials'));
+        } else {
+          toast.error(t('loginError'));
+        }
+        return;
+      }
+      
+      toast.success(t('loginSuccess'));
+    } catch (error) {
+      toast.error(t('loginError'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEmailSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateInputs()) return;
+    
+    setIsSubmitting(true);
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+        },
+      });
+      
+      if (error) {
+        if (error.message.includes('already registered')) {
+          toast.error(t('emailAlreadyExists'));
+        } else {
+          toast.error(t('signupError'));
+        }
+        return;
+      }
+      
+      toast.success(t('signupSuccess'));
+    } catch (error) {
+      toast.error(t('signupError'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -49,6 +140,117 @@ const Auth = () => {
             </div>
             <h1 className="text-2xl font-bold">{t('welcomeBack')}</h1>
             <p className="text-muted-foreground mt-2">{t('loginSubtitle')}</p>
+          </div>
+
+          <Tabs defaultValue="login" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="login">{t('login')}</TabsTrigger>
+              <TabsTrigger value="signup">{t('signup')}</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="login">
+              <form onSubmit={handleEmailLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="login-email">{t('email')}</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="login-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t('emailPlaceholder')}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">{t('password')}</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="login-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={t('passwordPlaceholder')}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? t('loggingIn') : t('login')}
+                </Button>
+              </form>
+            </TabsContent>
+            
+            <TabsContent value="signup">
+              <form onSubmit={handleEmailSignup} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-email">{t('email')}</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t('emailPlaceholder')}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password">{t('password')}</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="signup-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={t('passwordPlaceholder')}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{t('passwordHint')}</p>
+                </div>
+                
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? t('signingUp') : t('signup')}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
+            </div>
           </div>
 
           <Button
