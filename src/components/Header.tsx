@@ -1,17 +1,9 @@
-import { Moon, Sun, Globe, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useAppStore } from '@/store/appStore';
-import { useTranslation } from '@/hooks/useTranslation';
+import { TrendingUp } from 'lucide-react';
+import { UserMenu } from '@/components/UserMenu';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const Header = () => {
-  const { theme, setTheme, language, setLanguage } = useAppStore();
-  const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 glass-card border-b">
@@ -27,40 +19,7 @@ export const Header = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="rounded-xl"
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-5 h-5" />
-            ) : (
-              <Moon className="w-5 h-5" />
-            )}
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-xl">
-                <Globe className="w-5 h-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => setLanguage('en')}
-                className={language === 'en' ? 'bg-primary/10' : ''}
-              >
-                {t('english')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setLanguage('fa')}
-                className={language === 'fa' ? 'bg-primary/10' : ''}
-              >
-                {t('persian')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {user && <UserMenu />}
         </div>
       </div>
     </header>

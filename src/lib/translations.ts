@@ -75,6 +75,25 @@ export const translations = {
     language: "Language",
     english: "English",
     persian: "فارسی",
+
+    // Auth
+    welcomeBack: "Welcome Back",
+    loginSubtitle: "Sign in to access your trading journal",
+    signInWithGoogle: "Sign in with Google",
+    loginError: "Failed to sign in. Please try again.",
+    logout: "Logout",
+    logoutSuccess: "Successfully logged out",
+    logoutError: "Failed to logout",
+    
+    // Profile
+    editName: "Edit Name",
+    displayName: "Display Name",
+    enterYourName: "Enter your name",
+    noName: "No Name",
+    nameUpdated: "Name updated successfully",
+    nameUpdateError: "Failed to update name",
+    saving: "Saving...",
+    save: "Save",
   },
   fa: {
     // Onboarding
@@ -152,6 +171,25 @@ export const translations = {
     language: "زبان",
     english: "English",
     persian: "فارسی",
+
+    // Auth
+    welcomeBack: "خوش آمدید",
+    loginSubtitle: "برای دسترسی به ژورنال معاملاتی وارد شوید",
+    signInWithGoogle: "ورود با گوگل",
+    loginError: "ورود ناموفق بود. لطفا دوباره تلاش کنید.",
+    logout: "خروج",
+    logoutSuccess: "با موفقیت خارج شدید",
+    logoutError: "خروج ناموفق بود",
+    
+    // Profile
+    editName: "ویرایش نام",
+    displayName: "نام نمایشی",
+    enterYourName: "نام خود را وارد کنید",
+    noName: "بدون نام",
+    nameUpdated: "نام با موفقیت بروزرسانی شد",
+    nameUpdateError: "بروزرسانی نام ناموفق بود",
+    saving: "در حال ذخیره...",
+    save: "ذخیره",
   },
 };
 
