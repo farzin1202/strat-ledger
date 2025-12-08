@@ -21,6 +21,7 @@ export interface Month {
   name: string;
   year: number;
   trades: Trade[];
+  notes: string;
 }
 
 export interface Strategy {
@@ -28,6 +29,7 @@ export interface Strategy {
   name: string;
   months: Month[];
   createdAt: string;
+  notes: string;
 }
 
 export const useSupabaseData = () => {
@@ -65,6 +67,7 @@ export const useSupabaseData = () => {
         id: month.id,
         name: month.name,
         year: month.year,
+        notes: (month as { notes?: string }).notes || '',
         trades: tradesData
           ?.filter(trade => trade.month_id === month.id)
           .map(trade => ({
@@ -88,6 +91,7 @@ export const useSupabaseData = () => {
         id: strategy.id,
         name: strategy.name,
         createdAt: strategy.created_at,
+        notes: (strategy as { notes?: string }).notes || '',
         months: monthsWithTrades.filter(month => 
           monthsData?.find(m => m.id === month.id && m.strategy_id === strategy.id)
         ),
@@ -121,14 +125,31 @@ export const useSupabaseData = () => {
     return data;
   };
 
-  const updateStrategy = async (id: string, name: string) => {
+  const updateStrategy = async (id: string, name: string, notes?: string) => {
+    const updateData: Record<string, unknown> = { name };
+    if (notes !== undefined) updateData.notes = notes;
+    
     const { error } = await supabase
       .from('strategies')
-      .update({ name })
+      .update(updateData)
       .eq('id', id);
 
     if (error) {
       console.error('Error updating strategy:', error);
+      return;
+    }
+
+    await fetchData();
+  };
+
+  const updateStrategyNotes = async (id: string, notes: string) => {
+    const { error } = await supabase
+      .from('strategies')
+      .update({ notes })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating strategy notes:', error);
       return;
     }
 
@@ -173,6 +194,20 @@ export const useSupabaseData = () => {
 
     if (error) {
       console.error('Error updating month:', error);
+      return;
+    }
+
+    await fetchData();
+  };
+
+  const updateMonthNotes = async (monthId: string, notes: string) => {
+    const { error } = await supabase
+      .from('months')
+      .update({ notes })
+      .eq('id', monthId);
+
+    if (error) {
+      console.error('Error updating month notes:', error);
       return;
     }
 
@@ -269,9 +304,11 @@ export const useSupabaseData = () => {
     loading,
     addStrategy,
     updateStrategy,
+    updateStrategyNotes,
     deleteStrategy,
     addMonth,
     updateMonth,
+    updateMonthNotes,
     deleteMonth,
     addTrade,
     updateTrade,

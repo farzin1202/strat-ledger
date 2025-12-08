@@ -40,7 +40,7 @@ export const TradeGrid = ({ trades, strategyId, monthId, monthYear, monthName }:
       result: 'win',
       profitLossDollar: 0,
       profitLossPercent: 0,
-      tradeCount: 1,
+      tradeCount: 1, // Keep for database compatibility
       maxPercent: null,
     };
     await addTrade(strategyId, monthId, newTrade);
@@ -269,27 +269,6 @@ export const TradeGrid = ({ trades, strategyId, monthId, monthYear, monthName }:
                     </Select>
                   </div>
 
-                  {/* Trade Count */}
-                  <div className="flex-shrink-0">
-                    {editingCell?.rowId === trade.id && editingCell?.column === 'tradeCount' ? (
-                      <Input
-                        type="number"
-                        min="1"
-                        defaultValue={trade.tradeCount || 1}
-                        onBlur={(e) => handleCellUpdate(trade.id, 'tradeCount', e.target.value, trade)}
-                        autoFocus
-                        className="h-9 w-16 font-mono text-center"
-                      />
-                    ) : (
-                      <div
-                        onClick={() => setEditingCell({ rowId: trade.id, column: 'tradeCount' })}
-                        className="cursor-pointer px-3 py-1.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-center"
-                      >
-                        <span className="text-xs text-muted-foreground block">{t('tradeCount')}</span>
-                        <span className="font-mono font-bold">{trade.tradeCount || 1}</span>
-                      </div>
-                    )}
-                  </div>
 
                   {/* Profit/Loss $ */}
                   <div className="flex-shrink-0">

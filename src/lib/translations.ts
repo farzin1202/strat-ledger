@@ -111,6 +111,12 @@ export const translations = {
     nameUpdateError: "Failed to update name",
     saving: "Saving...",
     save: "Save",
+    
+    // Notes
+    notes: "Notes",
+    notesPlaceholder: "Add your notes here...",
+    strategyNotes: "Strategy Notes",
+    monthNotes: "Month Notes",
   },
   fa: {
     // Onboarding
@@ -224,6 +230,12 @@ export const translations = {
     nameUpdateError: "بروزرسانی نام ناموفق بود",
     saving: "در حال ذخیره...",
     save: "ذخیره",
+    
+    // Notes
+    notes: "یادداشت‌ها",
+    notesPlaceholder: "یادداشت‌های خود را اینجا بنویسید...",
+    strategyNotes: "یادداشت‌های استراتژی",
+    monthNotes: "یادداشت‌های ماه",
   },
 };
 
