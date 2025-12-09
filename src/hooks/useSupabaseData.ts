@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface Trade {
   id: string;
@@ -33,6 +34,7 @@ export interface Strategy {
 }
 
 export const useSupabaseData = () => {
+  const { user } = useAuth();
   const [strategies, setStrategies] = useState<Strategy[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -110,9 +112,14 @@ export const useSupabaseData = () => {
   }, [fetchData]);
 
   const addStrategy = async (name: string) => {
+    if (!user) {
+      console.error('User must be logged in to add a strategy');
+      return;
+    }
+
     const { data, error } = await supabase
       .from('strategies')
-      .insert({ name })
+      .insert({ name, user_id: user.id })
       .select()
       .single();
 
