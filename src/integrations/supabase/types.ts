@@ -131,6 +131,7 @@ export type Database = {
           name: string
           notes: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -138,6 +139,7 @@ export type Database = {
           name: string
           notes?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -145,6 +147,7 @@ export type Database = {
           name?: string
           notes?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -228,6 +231,8 @@ export type Database = {
           key_name: string
         }[]
       }
+      owns_month: { Args: { _month_id: string }; Returns: boolean }
+      owns_strategy: { Args: { _strategy_id: string }; Returns: boolean }
       toggle_api_key: { Args: { p_key_id: string }; Returns: boolean }
       verify_admin_login: {
         Args: { p_password: string; p_username: string }
