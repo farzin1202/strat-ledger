@@ -14,51 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_users: {
-        Row: {
-          created_at: string
-          id: string
-          password_hash: string
-          username: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          password_hash: string
-          username: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          password_hash?: string
-          username?: string
-        }
-        Relationships: []
-      }
-      api_keys: {
-        Row: {
-          api_key: string
-          created_at: string
-          id: string
-          is_active: boolean
-          key_name: string
-        }
-        Insert: {
-          api_key: string
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          key_name: string
-        }
-        Update: {
-          api_key?: string
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          key_name?: string
-        }
-        Relationships: []
-      }
       months: {
         Row: {
           created_at: string
@@ -215,32 +170,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      create_admin_user: {
-        Args: { p_password: string; p_username: string }
-        Returns: string
-      }
-      delete_api_key: { Args: { p_key_id: string }; Returns: boolean }
-      generate_api_key: { Args: { p_key_name: string }; Returns: string }
-      get_api_keys: {
-        Args: never
-        Returns: {
-          api_key: string
-          created_at: string
-          id: string
-          is_active: boolean
-          key_name: string
-        }[]
-      }
       owns_month: { Args: { _month_id: string }; Returns: boolean }
       owns_strategy: { Args: { _strategy_id: string }; Returns: boolean }
-      toggle_api_key: { Args: { p_key_id: string }; Returns: boolean }
-      verify_admin_login: {
-        Args: { p_password: string; p_username: string }
-        Returns: {
-          admin_id: string
-          success: boolean
-        }[]
-      }
     }
     Enums: {
       [_ in never]: never
